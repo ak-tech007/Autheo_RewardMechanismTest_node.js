@@ -1,0 +1,39 @@
+{
+    "contractAddress": "0x5d416B539fcA2FF0fB203E7e621e9d1D8F7E660e",
+    "tokenAddress": "0x6c83a269481a22b31265aa79CC79bd226D3eEC8b",
+    "validators": {
+      "lowBugBounty": {
+        "privateKey": "415a38fb8fb1f3124000078a7182441e27a5a3f40d8a3937e5ecf76781e7e481",
+        "addresses": [
+          "0xA53CF4CD53e65c12B038652A6b3f12bF9150f77a"
+        ]
+      },
+      "mediumBugBounty": {
+        "privateKey": "c580aa2af861e080b2ec7e528ae92f42849e6673fcc196bb08c10e4b7c611d29",
+        "addresses": [
+          "0x629679bD14C00c688e5e5420DBa7e85e30C186b3"
+        ]
+      },
+      "highBugBounty": {
+        "privateKey": "7bfde67a697fbcf07841be9b30e424dbd9ea3692a2f035b5d7bb70aea6dbeacb",
+        "addresses": [
+          "0xd8763956384984D166481820f6852f03e7B8a901"
+        
+        ]
+      },
+      "contractDeployment": {
+        "privateKey": "8513a0ad6aa3932392023a3452f5cdb0abcb7c3942868824e88084bdf048b362",
+        "addresses": [
+          "0xf6ff53De960fDb181C3b8af41c864eB23A94fF38"
+        ]
+      },
+      "dappUsers": {
+        "privateKey": "4b75e6a5922863b21154d30e2ebf7187e68912344066e989ac1a0f173813f757",
+        "addresses": [
+          "0xFDbeDAc6a67f374B2d66afFC72e8c1d6b6282fb1"
+        ],
+        "uptimeStatus": [true, false]
+      }
+    }
+  }
+  
