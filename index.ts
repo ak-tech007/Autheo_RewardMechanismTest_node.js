@@ -39,9 +39,23 @@ type WhitelistType =
     | 'contractDeployment'
     | 'dappUsers';
 
+//SmartContract types
+type SmartContractType =
+    | 'deployedAddress'
+    | 'walletAddress'
+    | 'walletPrivateKey';
+
 interface WhitelistConfig {
-    contractAddress: string;
-    tokenAddress: string;
+    token: {
+        deployedAddress: string;
+        walletAddress: string;
+        walletPrivateKey: string;
+    };
+    contract: {
+        deployedAddress: string;
+        walletAddress: string;
+        walletPrivateKey: string;
+    };
     validators: {
         [key in WhitelistType]: {
             privateKey: string;
@@ -54,9 +68,11 @@ interface WhitelistConfig {
 class WhitelistManager {
     private providers: { [key in WhitelistType]: ethers.Provider };
     private wallets: { [key in WhitelistType]: ethers.Wallet };
-    private contracts: { [key in WhitelistType]: ethers.Contract };
-    private tokenContracts: { [key in WhitelistType]: ethers.Contract };
     private config: WhitelistConfig;
+    private tokenWallet: ethers.Wallet;
+    private contractWallet: ethers.Wallet;
+    private tokenContract: ethers.Contract ;
+    private contract: ethers.Contract ;
 
     constructor(configPath: string) {
         // Load configuration from JSON
@@ -65,10 +81,25 @@ class WhitelistManager {
         // Initialize providers, wallets, and contracts for each whitelist type
         this.providers = {} as { [key in WhitelistType]: ethers.Provider };
         this.wallets = {} as { [key in WhitelistType]: ethers.Wallet };
-        this.contracts = {} as { [key in WhitelistType]: ethers.Contract };
-        this.tokenContracts = {} as { [key in WhitelistType]: ethers.Contract };
-
+        
         const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+        
+        this.tokenWallet = new ethers.Wallet(this.config.token.walletPrivateKey, provider);
+        this.contractWallet = new ethers.Wallet(this.config.contract.walletPrivateKey, provider);
+        
+        //Initialize token contract instance
+        this.tokenContract = new ethers.Contract(
+            this.config.token.deployedAddress,
+            ERC20_ABI,
+            this.tokenWallet
+        );
+
+        //Initialize reward distribution contract instance
+        this.contract = new ethers.Contract(
+            this.config.contract.deployedAddress,
+            CONTRACT_ABI,
+            this.contractWallet
+        );
 
         // Initialize for each whitelist type
         const whitelistTypes: WhitelistType[] = [
@@ -83,25 +114,12 @@ class WhitelistManager {
             this.providers[type] = provider;
             this.wallets[type] = new ethers.Wallet(this.config.validators[type].privateKey, provider);
 
-            // Initialize contract instances
-            this.contracts[type] = new ethers.Contract(
-                this.config.contractAddress,
-                CONTRACT_ABI,
-                this.wallets[type]
-            );
-
-            // Initialize token contract instances
-            this.tokenContracts[type] = new ethers.Contract(
-                this.config.tokenAddress,
-                ERC20_ABI,
-                this.wallets[type]
-            );
         });
     }
 
     private async calculateTotalRewardAmount(type: WhitelistType): Promise<bigint> {
         console.log("we are here", type);
-        const contract = this.contracts[type];
+        const contract = this.contract;
         const addresses = this.config.validators[type].addresses;
         console.log(addresses, "addresses");
         const maxBps = BigInt(10000);
@@ -268,7 +286,7 @@ class WhitelistManager {
     
     private async transferTokensToContract(type: WhitelistType) {
         console.log("we are here again...", type)
-        const tokenContract = this.tokenContracts[type];
+        const tokenContract = this.tokenContract;
         const wallet = this.wallets[type];
         // console.log({ tokenContract, wallet }, "tokenContract, wallet ")
 
@@ -277,7 +295,7 @@ class WhitelistManager {
         // console.log(rewardAmount.toString(), "reward Amount")
 
         // Check wallet balance
-        const balance = await tokenContract.balanceOf(wallet.address);
+        const balance = await tokenContract.balanceOf(this.tokenWallet.address);
         console.log(balance.toString(), "balance in transfer Tokens To Contract");
 
         if (BigInt(balance) <= BigInt(rewardAmount)) {
@@ -285,41 +303,41 @@ class WhitelistManager {
         }
 
         // Approve and transfer tokens to contract
-        const approveTx = await tokenContract.approve(this.config.contractAddress, rewardAmount);
-        await approveTx.wait();
+        // const approveTx = await tokenContract.approve(this.config.contractAddress, rewardAmount);
+        // await approveTx.wait();
 
-        console.log(`Approved ${ethers.formatEther(rewardAmount)} tokens for ${type}`);
+        // console.log(`Approved ${ethers.formatEther(rewardAmount)} tokens for ${type}`);
     }
 
     public async whitelistAddresses() {
         try {
             // Low Bug Bounty Users
             await this.transferTokensToContract('lowBugBounty');
-            await this.contracts.lowBugBounty.registerLowBugBountyUsers(
+            await this.contract.registerLowBugBountyUsers(
                 this.config.validators.lowBugBounty.addresses
             );
 
             // Medium Bug Bounty Users
             await this.transferTokensToContract('mediumBugBounty');
-            await this.contracts.mediumBugBounty.registerMediumBugBountyUsers(
+            await this.contract.registerMediumBugBountyUsers(
                 this.config.validators.mediumBugBounty.addresses
             );
 
             // High Bug Bounty Users
             await this.transferTokensToContract('highBugBounty');
-            await this.contracts.highBugBounty.registerHighBugBountyUsers(
+            await this.contract.registerHighBugBountyUsers(
                 this.config.validators.highBugBounty.addresses
             );
 
             // Contract Deployment Users
             await this.transferTokensToContract('contractDeployment');
-            await this.contracts.contractDeployment.registerContractDeploymentUsers(
+            await this.contract.registerContractDeploymentUsers(
                 this.config.validators.contractDeployment.addresses
             );
 
             // Dapp Users
             await this.transferTokensToContract('dappUsers');
-            await this.contracts.dappUsers.registerDappUsers(
+            await this.contract.registerDappUsers(
                 this.config.validators.dappUsers.addresses,
                 this.config.validators.dappUsers.uptimeStatus || []
             );
