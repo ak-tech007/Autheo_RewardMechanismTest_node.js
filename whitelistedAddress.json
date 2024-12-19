@@ -1,12 +1,12 @@
 {
     "token": {
-      "deployedAddress": "0x68D84a1789cCd39eE78a4e651FC739da7A41212C",
+      "deployedAddress": "0x2c38F4D1f9257C7f2a7FeEb4E1F3B2018FA70166",
       "walletAddress": "0x140998Ab60F105eb37eE8925e8e26186A60185aD",
       "walletPrivateKey": "20668f559508f6428e78e9ecef8d6fd798c30aebdeb6a407e876ee93dd8af45b"
     },
     "contract": {
-      "deployedAddress": "0x5d416B539fcA2FF0fB203E7e621e9d1D8F7E660e",
-      "walletAddress": "0x5d416B539fcA2FF0fB203E7e621e9d1D8F7E660e",
+      "deployedAddress": "0x62ed8B5C687C0D0FA23711382b5E668ad74F16A4",
+      "walletAddress": "0xAeBbcbee2736786Af9Fc47A7cCC5CC3BF2caD673",
       "walletPrivateKey": "e0cc6f419102b92b6e1230a8d47cbb13ec43ae8349158b2aed2cbfad1c730027"
     },    
     "validators": {

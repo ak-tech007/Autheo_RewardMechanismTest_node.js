@@ -118,20 +118,24 @@ class WhitelistManager {
         // Fetch contract constants
         const totalSupply = BigInt(await contract.totalSupply());
         console.log(totalSupply.toString(), "totalSupply...");
+        
+        //calculate bugBountyAllocationPercetage
+        const totalBugBountyAllocationPercentage = BigInt(await contract.BUG_BOUNTY_ALLOCATION_PERCENTAGE()); // 30% for total bug bounty
+
+        const bugBountyAllocation = (totalSupply * totalBugBountyAllocationPercentage / maxBps)
 
         switch (type) {
             case 'lowBugBounty':
                 console.log("NOW IN LOW BOUNTY");
 
                 // Fetch constants
-                const lowAllocationPercentage = BigInt(await contract.BUG_BOUNTY_ALLOCATION_PERCENTAGE()); // 30% for total bug bounty
                 const lowPercentage = BigInt(await contract.LOW_PERCENTAGE()); // 5% for low bug bounty
                 const lowAddressCount = BigInt(addresses.length);
 
                 console.log(
                     lowPercentage.toString(),
-                    lowAllocationPercentage.toString(),
-                    "lowPercentage, lowAllocationPercentage"
+                    totalBugBountyAllocationPercentage.toString(),
+                    "lowPercentage, bugBountyAllocationPercentage"
                 );
                 console.log(lowAddressCount.toString(), " addresses length in low bounty");
 
@@ -140,134 +144,115 @@ class WhitelistManager {
                 }
 
                 // 30% of total supply allocated for bug bounty
-                const bugBountyAllocation = (totalSupply * lowAllocationPercentage / maxBps)
-                console.log(bugBountyAllocation, "bug bug")
+                
+                console.log(bugBountyAllocation, "total bugbounty allocation");
 
                 // Calculate the 5% allocation for low bug bounty (5% of the bug bounty allocation)
-                const maxLowBugBountyAllocation = (bugBountyAllocation * lowPercentage) / maxBps;
-                console.log(maxLowBugBountyAllocation, "max bug")
+                const LowBugBountyAllocation = (bugBountyAllocation * lowPercentage) / maxBps;
+                console.log(LowBugBountyAllocation, "low bug bounty allocation");
 
-                console.log(maxLowBugBountyAllocation.toString(), "maxLowBugBountyAllocation");
-
-                // Calculate the reward per address for low bug bounty
-                const lowBountyReward = maxLowBugBountyAllocation / lowAddressCount;
-
-                console.log(lowBountyReward.toString(), "Calculated lowBugBounty reward per address");
-
-                // Validate reward amount does not exceed the total allocation cap
-                const totalCalculatedRewardForLow = lowBountyReward * lowAddressCount;
-                if (totalCalculatedRewardForLow > maxLowBugBountyAllocation) {
-                    throw new Error("Calculated reward exceeds allowable allocation for lowBugBounty.");
-                }
-
-                return totalCalculatedRewardForLow;
+                return LowBugBountyAllocation;
 
 
             case 'mediumBugBounty':
-                console.log("NOW IN MEDIUM BOUNTY");
-                const mediumAllocationPercentage = BigInt(await contract.BUG_BOUNTY_ALLOCATION_PERCENTAGE()); // 30% for total bug bounty
-                const mediumPercentage = BigInt(await contract.LOW_PERCENTAGE()); // 5% for low bug bounty
+                console.log("NOW IN medium BOUNTY");
+
+                // Fetch constants
+                const mediumPercentage = BigInt(await contract.MEDIUM_PERCENTAGE()); // 35% for low bug bounty
                 const mediumAddressCount = BigInt(addresses.length);
 
                 console.log(
                     mediumPercentage.toString(),
-                    mediumAllocationPercentage.toString(),
-                    "mediumPercentage, mediumAllocationPercentage"
+                    totalBugBountyAllocationPercentage.toString(),
+                    "mediumPercentage, bugBountyAllocationPercentage"
                 );
-                console.log(mediumAddressCount.toString(), " addresses length in low bounty");
+                console.log(mediumAddressCount.toString(), " addresses length in medium bounty");
 
                 if (mediumAddressCount === BigInt(0)) {
                     throw new Error("No addresses found for lowBugBounty rewards.");
                 }
 
                 // 30% of total supply allocated for bug bounty
-                const mediumBugBountyAllocation = (totalSupply * mediumAllocationPercentage / maxBps)
-                console.log(mediumBugBountyAllocation, "bug bug")
+                
+                console.log(bugBountyAllocation, "total bugbounty allocation");
 
                 // Calculate the 5% allocation for low bug bounty (5% of the bug bounty allocation)
-                const maxMediumBugBountyAllocation = (mediumBugBountyAllocation * mediumPercentage) / maxBps;
-                console.log(maxMediumBugBountyAllocation, "max bug")
+                const mediumBugBountyAllocation = (bugBountyAllocation * mediumPercentage) / maxBps;
+                console.log(mediumBugBountyAllocation, "medium bug bounty allocation");
 
-                console.log(maxMediumBugBountyAllocation.toString(), "maxMediumBugBountyAllocation");
-
-                // Calculate the reward per address for low bug bounty
-                const mediumBountyReward = maxMediumBugBountyAllocation / mediumAddressCount;
-
-                console.log(mediumBountyReward.toString(), "Calculated lowBugBounty reward per address");
-
-                // Validate reward amount does not exceed the total allocation cap
-                const totalCalculatedRewardForMedium = mediumBountyReward * mediumAddressCount;
-                if (totalCalculatedRewardForMedium > maxMediumBugBountyAllocation) {
-                    throw new Error("Calculated reward exceeds allowable allocation for lowBugBounty.");
-                }
-
-                return totalCalculatedRewardForMedium;
+                return mediumBugBountyAllocation;
 
             case 'highBugBounty':
-                console.log("NOW IN HIGH BOUNTY");
-                const highAllocationPercentage = BigInt(await contract.BUG_BOUNTY_ALLOCATION_PERCENTAGE()); // 30% for total bug bounty
-                const highPercentage = BigInt(await contract.LOW_PERCENTAGE()); // 5% for low bug bounty
+                console.log("NOW IN High BOUNTY");
+
+                // Fetch constants
+                const highPercentage = BigInt(await contract.HIGH_PERCENTAGE()); // 60% for low bug bounty
                 const highAddressCount = BigInt(addresses.length);
 
                 console.log(
                     highPercentage.toString(),
-                    highAllocationPercentage.toString(),
-                    "highPercentage, highAllocationPercentage"
+                    totalBugBountyAllocationPercentage.toString(),
+                    "highPercentage, bugBountyAllocationPercentage"
                 );
-                console.log(highAddressCount.toString(), " addresses length in low bounty");
+                console.log(highAddressCount.toString(), " addresses length in high bounty");
 
                 if (highAddressCount === BigInt(0)) {
                     throw new Error("No addresses found for lowBugBounty rewards.");
                 }
 
                 // 30% of total supply allocated for bug bounty
-                const highBugBountyAllocation = (totalSupply * highAllocationPercentage / maxBps)
-                console.log(highBugBountyAllocation, "bug bug")
+                
+                console.log(bugBountyAllocation, "total bugbounty allocation");
 
                 // Calculate the 5% allocation for low bug bounty (5% of the bug bounty allocation)
-                const maxHighBugBountyAllocation = (highBugBountyAllocation * highPercentage) / maxBps;
-                console.log(maxHighBugBountyAllocation, "max bug")
+                const highBugBountyAllocation = (bugBountyAllocation * highPercentage) / maxBps;
+                console.log(highBugBountyAllocation, "high bug bounty allocation");
 
-                console.log(maxHighBugBountyAllocation.toString(), "maxHighBugBountyAllocation");
-
-                // Calculate the reward per address for low bug bounty
-                const highBountyReward = maxHighBugBountyAllocation / highAddressCount;
-
-                console.log(highBountyReward.toString(), "Calculated lowBugBounty reward per address");
-
-                // Validate reward amount does not exceed the total allocation cap
-                const totalCalculatedRewardForHigh = highBountyReward * highAddressCount;
-                if (totalCalculatedRewardForHigh > maxHighBugBountyAllocation) {
-                    throw new Error("Calculated reward exceeds allowable allocation for lowBugBounty.");
-                }
-
-                return totalCalculatedRewardForHigh;
+                return highBugBountyAllocation;
 
             case 'contractDeployment':
                 console.log("NOW IN CONTRACT DEVELOPMENT");
-                const devAllocationPercentage = BigInt(await contract.DEVELOPER_REWARD_ALLOCATION_PERCENTAGE());
-                console.log(devAllocationPercentage.toString(), "dev Allocation Percentage");
+                const deployAllocationPercentage = BigInt(await contract.DAPP_REWARD_ALLOCATION_PERCENTAGE()); //2% of total allocation
+                console.log(deployAllocationPercentage.toString(), "deploy Allocation Percentage");
+
+                const deploymentAddressCount = BigInt(addresses.length);
+                console.log(deploymentAddressCount.toString(), " addresses length in deployment bounty");
+
+                if (deploymentAddressCount === BigInt(0)) {
+                    throw new Error("No addresses found for deployment rewards.");
+                }
 
                 // Calculate reward for contract deployment
                 return (
-                    totalSupply * devAllocationPercentage / maxBps /
-                    BigInt(addresses.length)
+                    totalSupply * deployAllocationPercentage / maxBps
                 );
 
             case 'dappUsers':
                 console.log("NOW IN CONTRACT dApp USERS");
-                const dappAllocationPercentage = BigInt(await contract.DAPP_REWARD_ALLOCATION_PERCENTAGE());
+                const dappAllocationPercentage = BigInt(await contract.DEVELOPER_REWARD_ALLOCATION_PERCENTAGE()); //1% of total supply
                 const monthlyDappReward = BigInt(await contract.MONTHLY_DAPP_REWARD());
                 const monthlyUptimeBonus = BigInt(await contract.MONTHLY_UPTIME_BONUS());
 
                 // Calculate total reward per user (including potential uptime bonus)
-                const baseReward = monthlyDappReward * BigInt(addresses.length);
-                const uptimeBonusTotal = monthlyUptimeBonus * BigInt(
-                    this.config.validators.dappUsers.uptimeStatus?.filter(status => status).length || 0
-                );
-                console.log({ uptimeBonusTotal, baseReward }, " uptimeBonusTotal, baseReward");
+                // const baseReward = monthlyDappReward * BigInt(addresses.length);
+                // const uptimeBonusTotal = monthlyUptimeBonus * BigInt(
+                //     this.config.validators.dappUsers.uptimeStatus?.filter(status => status).length || 0
+                // );
+                // console.log({ uptimeBonusTotal, baseReward }, " uptimeBonusTotal, baseReward");
 
-                return baseReward + uptimeBonusTotal;
+                // return baseReward + uptimeBonusTotal;
+
+                const dappAddressCount = BigInt(addresses.length);
+                console.log(dappAddressCount.toString(), " addresses length in dapp bounty");
+
+                if (dappAddressCount === BigInt(0)) {
+                    throw new Error("No addresses found for deployment rewards.");
+                }
+
+                return (
+                    totalSupply * dappAllocationPercentage / maxBps
+                );
+
 
             default:
                 throw new Error(`Unsupported whitelist type: ${type}`);
@@ -287,7 +272,7 @@ class WhitelistManager {
 
         // Check wallet balance
         const balance = await tokenContract.balanceOf(this.tokenWallet.address);
-        console.log(balance.toString(), "balance in transfer Tokens To Contract");
+        console.log(balance.toString(), "balance in token wallet");
 
         if (BigInt(balance) <= BigInt(rewardAmount)) {
             throw new Error(`Insufficient token balance for ${type}`);
@@ -302,9 +287,12 @@ class WhitelistManager {
         await transferTx.wait();
         
         console.log(`transfered ${ethers.formatEther(rewardAmount)} tokens for ${type}`);
+
+        const remainingTokenBalance = await tokenContract.balanceOf(this.tokenWallet.address);
+        console.log(remainingTokenBalance.toString(), "remaining balance in token wallet");
         
-        const balance1 = await tokenContract.balanceOf(this.contractWallet.address);
-        console.log(balance1.toString(), "balance new wallet");
+        const contractBalance = await tokenContract.balanceOf(this.contractWallet.address);
+        console.log(contractBalance.toString(), "balance in contract wallet");
 
     }
 
