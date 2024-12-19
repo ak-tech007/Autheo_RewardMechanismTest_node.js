@@ -11,34 +11,38 @@
     },    
     "validators": {
       "lowBugBounty": {
-        "privateKey": "415a38fb8fb1f3124000078a7182441e27a5a3f40d8a3937e5ecf76781e7e481",
         "addresses": [
-          "0xA53CF4CD53e65c12B038652A6b3f12bF9150f77a"
+          "0x1daC81A62C9f6E681025D4b1Ea559D9510C442e0",
+          "0xDd4cf3B0A48e92842E73aA017f4eb7059259ed2F",
+          "0xE776e53D03fcfD548695F1d4388533061a7ecb11"
         ]
       },
       "mediumBugBounty": {
-        "privateKey": "c580aa2af861e080b2ec7e528ae92f42849e6673fcc196bb08c10e4b7c611d29",
         "addresses": [
-          "0x629679bD14C00c688e5e5420DBa7e85e30C186b3"
+          "0x6D806495f085643C69Bf3697B17E580BC86Cd0E1",
+          "0x3fb421365c1d9599F264fDa86008A50d9174b305",
+          "0x638549e8613A89159Ad4067A4197DDc1AF906d2E"
         ]
       },
       "highBugBounty": {
-        "privateKey": "7bfde67a697fbcf07841be9b30e424dbd9ea3692a2f035b5d7bb70aea6dbeacb",
         "addresses": [
-          "0xd8763956384984D166481820f6852f03e7B8a901"
-        
+          "0xDd3DecF2C47eCaFD7e0810DCe816cB85a3b2a8CF",
+          "0x4B6289Eb7d87bF81BE338c4656a53083CAf66D2b",
+          "0xe45941c4D2Aa98fbB7fbbdf675121e1f27Bc608f"
         ]
       },
       "contractDeployment": {
-        "privateKey": "8513a0ad6aa3932392023a3452f5cdb0abcb7c3942868824e88084bdf048b362",
         "addresses": [
-          "0xf6ff53De960fDb181C3b8af41c864eB23A94fF38"
+          "0xf8906f230E1f054390a70263910FAb2B95bcA9Cb",
+          "0x165aFb3bf2ea12c6383605a17B17c189ef5ECd9e",
+          "0xC8518513e98A7f72b80B9C1D4c28543d3728126d"
         ]
       },
       "dappUsers": {
-        "privateKey": "4b75e6a5922863b21154d30e2ebf7187e68912344066e989ac1a0f173813f757",
         "addresses": [
-          "0xFDbeDAc6a67f374B2d66afFC72e8c1d6b6282fb1"
+          "0x528Fc06697B08ae2eeDdC7664e6327A5525607F6",
+          "0xeFd423f3874E4dE5Be91804A68A9418f279D378C",
+          "0xA6b2ff45E5Fc491381A16643d307f9a936fE404e"
         ],
         "uptimeStatus": [true, false]
       }

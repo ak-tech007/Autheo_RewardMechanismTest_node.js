@@ -39,11 +39,6 @@ type WhitelistType =
     | 'contractDeployment'
     | 'dappUsers';
 
-//SmartContract types
-type SmartContractType =
-    | 'deployedAddress'
-    | 'walletAddress'
-    | 'walletPrivateKey';
 
 interface WhitelistConfig {
     token: {
@@ -58,7 +53,6 @@ interface WhitelistConfig {
     };
     validators: {
         [key in WhitelistType]: {
-            privateKey: string;
             addresses: string[];
             uptimeStatus?: boolean[]; // Only for dappUsers
         };
@@ -67,7 +61,6 @@ interface WhitelistConfig {
 
 class WhitelistManager {
     private providers: { [key in WhitelistType]: ethers.Provider };
-    private wallets: { [key in WhitelistType]: ethers.Wallet };
     private config: WhitelistConfig;
     private tokenWallet: ethers.Wallet;
     private contractWallet: ethers.Wallet;
@@ -80,7 +73,6 @@ class WhitelistManager {
 
         // Initialize providers, wallets, and contracts for each whitelist type
         this.providers = {} as { [key in WhitelistType]: ethers.Provider };
-        this.wallets = {} as { [key in WhitelistType]: ethers.Wallet };
         
         const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
         
@@ -112,7 +104,6 @@ class WhitelistManager {
 
         whitelistTypes.forEach(type => {
             this.providers[type] = provider;
-            this.wallets[type] = new ethers.Wallet(this.config.validators[type].privateKey, provider);
 
         });
     }
@@ -169,7 +160,7 @@ class WhitelistManager {
                     throw new Error("Calculated reward exceeds allowable allocation for lowBugBounty.");
                 }
 
-                return lowBountyReward;
+                return totalCalculatedRewardForLow;
 
 
             case 'mediumBugBounty':
@@ -210,7 +201,7 @@ class WhitelistManager {
                     throw new Error("Calculated reward exceeds allowable allocation for lowBugBounty.");
                 }
 
-                return mediumBountyReward;
+                return totalCalculatedRewardForMedium;
 
             case 'highBugBounty':
                 console.log("NOW IN HIGH BOUNTY");
@@ -250,7 +241,7 @@ class WhitelistManager {
                     throw new Error("Calculated reward exceeds allowable allocation for lowBugBounty.");
                 }
 
-                return highBountyReward;
+                return totalCalculatedRewardForHigh;
 
             case 'contractDeployment':
                 console.log("NOW IN CONTRACT DEVELOPMENT");
@@ -287,7 +278,7 @@ class WhitelistManager {
     private async transferTokensToContract(type: WhitelistType) {
         console.log("we are here again...", type)
         const tokenContract = this.tokenContract;
-        const wallet = this.wallets[type];
+        // const wallet = this.wallets[type];
         // console.log({ tokenContract, wallet }, "tokenContract, wallet ")
 
         // Calculate total reward amount
@@ -302,11 +293,19 @@ class WhitelistManager {
             throw new Error(`Insufficient token balance for ${type}`);
         }
 
-        // Approve and transfer tokens to contract
+        // // Approve and transfer tokens to contract
         // const approveTx = await tokenContract.approve(this.config.contractAddress, rewardAmount);
         // await approveTx.wait();
 
-        // console.log(`Approved ${ethers.formatEther(rewardAmount)} tokens for ${type}`);
+        //transfer tokens to contract
+        const transferTx = await tokenContract.transfer(this.contractWallet.address, rewardAmount);
+        await transferTx.wait();
+        
+        console.log(`transfered ${ethers.formatEther(rewardAmount)} tokens for ${type}`);
+        
+        const balance1 = await tokenContract.balanceOf(this.contractWallet.address);
+        console.log(balance1.toString(), "balance new wallet");
+
     }
 
     public async whitelistAddresses() {
